@@ -27,7 +27,7 @@ Every feature in the brief now actually works in the browser, rather than being 
 | Dividend projection (12% sample rate) | Works — projected from the locked balance |
 | English / Kiswahili switch | Works across every page, including the dashboard and dialogs |
 | Advantages and marketing pages | Fully fleshed out with photography |
-| Mobile navigation, dialogs, toasts, form errors, keyboard support | Works |
+| Mobile navigation (fullscreen menu), dialogs, toasts, form errors, keyboard support | Works |
 
 ### Demo account
 

@@ -165,7 +165,10 @@
   }
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && activeModal) closeModal();
+    if (e.key !== 'Escape') return;
+    if (activeModal) { closeModal(); return; }
+    const menu = $('#menu');
+    if (menu && menu.classList.contains('open')) setMenu(false);
   });
 
   /* Fake M-Pesa checkout: nothing leaves the page. */
@@ -245,6 +248,28 @@
   }
 
   /* ---------------------------------------------------------
+     Mobile menu (fullscreen sheet)
+     --------------------------------------------------------- */
+  function setMenu(open) {
+    const menu = $('#menu');
+    if (!menu) return;
+    const toggle = $('.nav-toggle');
+    const wasOpen = menu.classList.contains('open');
+    menu.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? T('Close menu') : T('Open menu'));
+    }
+    if (open && !wasOpen) {
+      const close = menu.querySelector('.menu-x');
+      if (close) close.focus();
+    } else if (!open && wasOpen && toggle) {
+      toggle.focus();
+    }
+  }
+
+  /* ---------------------------------------------------------
      Routing
      --------------------------------------------------------- */
   const ROUTES = {
@@ -312,25 +337,23 @@
       join.textContent = logged ? T('My account') : T('Join');
       join.setAttribute('href', logged ? '#/dashboard' : '#/join');
     }
+    const menuJoin = $('#menu-join');
+    if (menuJoin) {
+      menuJoin.setAttribute('href', logged ? '#/dashboard' : '#/join');
+      const label = menuJoin.querySelector('[data-cta-label]');
+      if (label) label.textContent = logged ? T('My account') : T('Join now');
+    }
     const logout = $('#nav-logout');
     if (logout) logout.hidden = !logged;
 
-    const en = $('#lang-en');
-    const sw = $('#lang-sw');
-    if (en && sw) {
-      const isSw = lang() === 'sw';
-      en.classList.toggle('on', !isSw);
-      sw.classList.toggle('on', isSw);
-      en.setAttribute('aria-pressed', String(!isSw));
-      sw.setAttribute('aria-pressed', String(isSw));
-    }
+    // every language switch (top bar + menu panel) mirrors the current language
+    $$('[data-lang]').forEach(function (btn) {
+      const on = btn.getAttribute('data-lang') === lang();
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
 
-    const menu = $('#menu');
-    const toggle = $('.nav-toggle');
-    if (menu && toggle) {
-      menu.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }
+    setMenu(false);
   }
 
   function bindView(path) {
@@ -1472,11 +1495,12 @@
       case 'menu': {
         const menu = $('#menu');
         if (!menu) return;
-        const open = !menu.classList.contains('open');
-        menu.classList.toggle('open', open);
-        target.setAttribute('aria-expanded', String(open));
+        setMenu(!menu.classList.contains('open'));
         return;
       }
+      case 'menu-close':
+        setMenu(false);
+        return;
       case 'logout':
         Store.logout();
         toast(T('You are logged out.'));
@@ -1537,10 +1561,7 @@
   document.addEventListener('click', function (e) {
     const link = e.target.closest('#menu a');
     if (!link) return;
-    const menu = $('#menu');
-    const toggle = $('.nav-toggle');
-    if (menu) menu.classList.remove('open');
-    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    setMenu(false);
   });
 
   // Backdrop click closes a modal.

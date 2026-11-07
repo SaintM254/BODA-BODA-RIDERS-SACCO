@@ -56,10 +56,18 @@ button { font: inherit; }
 .topbar-inner { max-width: 1100px; margin: auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--navy); letter-spacing: -0.2px; text-decoration: none; white-space: nowrap; }
 .brand-logo { display: block; height: 44px; width: auto; flex-shrink: 0; }
+/* Right-hand side of the bar: nav links, then the language switch beside the toggle */
+.topbar-nav { display: flex; align-items: center; gap: 20px; }
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
+.topbar-actions .nav-toggle { margin-left: 2px; }
+
 .menu { display: flex; align-items: center; gap: 24px; }
-.menu > a:not(.pill) { color: var(--muted); font-size: 15px; text-decoration: none; transition: color .2s; }
-.menu > a:not(.pill):hover, .menu > a.current { color: var(--navy); }
-.menu > a.current { font-weight: 600; }
+.menu-links { display: flex; align-items: center; gap: 24px; }
+.menu-links > a { color: var(--muted); font-size: 15px; text-decoration: none; transition: color .2s; }
+.menu-links > a:hover, .menu-links > a.current { color: var(--navy); }
+.menu-links > a.current { font-weight: 600; }
+/* Panel-only furniture: hidden on desktop */
+.menu-head, .menu-foot { display: none; }
 .pill { background: var(--navy); color: var(--white) !important; padding: 9px 18px; border-radius: 980px; font-weight: 500; text-decoration: none; font-size: 15px; white-space: nowrap; transition: background .2s; }
 .pill:hover { background: var(--navy-deep); }
 .icon-btn { border: 1px solid var(--line); background: var(--white); color: var(--navy); width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; }
@@ -76,22 +84,57 @@ button { font: inherit; }
 .seg button.on { background: var(--navy); color: var(--white); }
 
 @media (max-width: 920px) {
+  /* the fullscreen panel is position:fixed, so the blur must not create a
+     containing block for it */
+  .topbar { backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+  .topbar-inner { position: relative; }
   .nav-toggle { display: inline-flex; }
   .brand-logo { height: 38px; }
+  .topbar-nav { gap: 12px; }
+  .topbar-actions { gap: 10px; }
+  .topbar-actions .lang .icon { display: none; }
+  .topbar-actions .seg button { padding: 6px 11px; font-size: 12px; }
+
+  /* Fullscreen menu: white, big right-aligned links, logo and close on the right */
   .menu {
-    position: absolute; top: calc(100% + 8px); right: 16px; left: 16px;
-    display: none; flex-direction: column; align-items: stretch; gap: 4px;
-    background: var(--white); border: 1px solid var(--line); border-radius: 18px;
-    padding: 12px; box-shadow: var(--shadow-md);
+    position: fixed; inset: 0; z-index: 95;
+    display: none; flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--white);
+    padding: 18px 24px 22px;
+    padding: max(18px, env(safe-area-inset-top)) 24px calc(22px + env(safe-area-inset-bottom));
+    overflow-y: auto; overscroll-behavior: contain;
   }
   .menu.open { display: flex; }
-  .menu > a:not(.pill) { padding: 10px 12px; border-radius: 10px; font-size: 16px; }
-  .menu > a:not(.pill):hover { background: var(--paper); }
-  .menu .lang { justify-content: space-between; padding: 10px 12px; }
-  .menu .pill { text-align: center; margin-top: 4px; }
-  .menu .icon-btn { align-self: flex-start; }
-  .menu.hide-sm { display: none; }
-  .topbar-inner { position: relative; }
+
+  .menu-head { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+  .menu-logo { height: 42px; width: auto; display: block; }
+  .menu .menu-x { width: 44px; height: 44px; border-color: transparent; background: var(--paper); }
+  .menu .menu-x .icon { width: 20px; height: 20px; }
+  .menu .menu-x:hover { background: var(--navy-soft); }
+
+  .menu-links { flex: 1; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 2px; }
+  .menu-links > a {
+    padding: 8px 0; color: var(--navy); text-align: right;
+    font-size: clamp(30px, 9.5vw, 42px); font-weight: 600;
+    letter-spacing: -1.2px; line-height: 1.15;
+  }
+  .menu-links > a:hover { color: var(--red); }
+
+  .menu-foot { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+  .menu-lang { display: flex; justify-content: flex-end; margin-bottom: 2px; }
+  .menu-lang .seg button { padding: 8px 16px; font-size: 13px; }
+  .menu-cta, .menu-close { justify-content: space-between; text-align: left; }
+  .menu-cta { padding: 17px 20px; font-size: 17px; }
+  .menu-close { padding: 16px 20px; font-size: 16px; font-weight: 500; }
+  .menu-cta .icon, .menu-close .icon { width: 20px; height: 20px; }
+
+  /* desktop-only controls */
+  .menu .pill { display: none; }
+  /* log-out keeps its place when signed in, opposite the logo */
+  .menu #nav-logout { position: absolute; left: 24px; top: 18px; top: max(18px, env(safe-area-inset-top)); }
+
+  body.menu-open { overflow: hidden; }
 }
 
 /* ---------- Buttons ---------- */

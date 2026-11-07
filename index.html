@@ -61,29 +61,61 @@
       <img class="brand-logo" src="assets/img/logo.svg" alt="" width="1627" height="886" decoding="async" data-brand-logo>
     </a>
 
-    <button class="nav-toggle" type="button" data-action="menu" aria-expanded="false" aria-controls="menu" aria-label="Menu">
-      <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
-    </button>
-
-    <nav class="menu" id="menu" aria-label="Main">
-      <a class="hide-sm" href="#/home" data-nav="/home">Home</a>
-      <a class="hide-sm" href="#/savings" data-nav="/savings">Savings</a>
-      <a class="hide-sm" href="#/loans" data-nav="/loans">Loans</a>
-      <a class="hide-sm" href="#/perks" data-nav="/perks">Advantages</a>
-
-      <div class="lang" role="group" aria-label="Language">
-        <svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg>
-        <div class="seg">
-          <button type="button" id="lang-en" class="on" aria-pressed="true" title="English" data-lang="en">EN</button>
-          <button type="button" id="lang-sw" aria-pressed="false" title="Kiswahili" data-lang="sw">SW</button>
+    <div class="topbar-nav">
+      <nav class="menu" id="menu" aria-label="Main">
+        <!-- fullscreen panel furniture (mobile only): logo right, close top-right -->
+        <div class="menu-head">
+          <img class="menu-logo" src="assets/img/logo.svg" alt="Boda Boda Sacco" width="1627" height="886" decoding="async" data-brand-logo>
+          <button class="icon-btn menu-x" type="button" data-action="menu-close" aria-label="Close menu">
+            <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+          </button>
         </div>
-      </div>
 
-      <a class="pill" id="nav-join" href="#/join">Join</a>
-      <button type="button" class="icon-btn" id="nav-logout" data-action="logout" title="Log out" aria-label="Log out" hidden>
-        <svg class="icon" aria-hidden="true"><use href="#i-logout"/></svg>
-      </button>
-    </nav>
+        <div class="menu-links">
+          <a href="#/home" data-nav="/home">Home</a>
+          <a href="#/savings" data-nav="/savings">Savings</a>
+          <a href="#/loans" data-nav="/loans">Loans</a>
+          <a href="#/perks" data-nav="/perks">Advantages</a>
+        </div>
+
+        <div class="menu-foot">
+          <div class="menu-lang">
+            <div class="seg" role="group" aria-label="Language">
+              <button type="button" data-lang="en" aria-pressed="true" title="English">EN</button>
+              <button type="button" data-lang="sw" aria-pressed="false" title="Kiswahili">SW</button>
+            </div>
+          </div>
+          <a class="btn block menu-cta" id="menu-join" href="#/join">
+            <span data-cta-label>Join now</span>
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </a>
+          <button class="btn outline block menu-close" type="button" data-action="menu-close">
+            <span>Close menu</span>
+            <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+          </button>
+        </div>
+
+        <a class="pill" id="nav-join" href="#/join">Join</a>
+        <button type="button" class="icon-btn" id="nav-logout" data-action="logout" title="Log out" aria-label="Log out" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-logout"/></svg>
+        </button>
+      </nav>
+
+      <!-- language switch stays visible on phones, right beside the menu toggle -->
+      <div class="topbar-actions">
+        <div class="lang" role="group" aria-label="Language">
+          <svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg>
+          <div class="seg">
+            <button type="button" id="lang-en" class="on" aria-pressed="true" title="English" data-lang="en">EN</button>
+            <button type="button" id="lang-sw" aria-pressed="false" title="Kiswahili" data-lang="sw">SW</button>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" data-action="menu" aria-expanded="false" aria-controls="menu" aria-label="Open menu">
+          <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 

@@ -202,6 +202,8 @@ window.I18N = (function () {
     'Confirm PIN': 'Thibitisha PIN',
     'I agree to the Sacco rules and I understand this is a working prototype, not a real financial account.': 'Nakubali kanuni za Sacco na ninaelewa huu ni mfano unaofanya kazi, sio akaunti halisi ya kifedha.',
     'Join now': 'Jiunge sasa',
+    'Close menu': 'Funga menyu',
+    'Open menu': 'Fungua menyu',
     'Prototype only. No real account is created.': 'Mfano tu. Hakuna akaunti halisi inayofunguliwa.',
     'Already a member?': 'Tayari ni mwanachama?',
     'Autosave from your M-Pesa, every day.': 'Akiba ya kiotomatiki kutoka M-Pesa yako, kila siku.',
