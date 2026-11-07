@@ -24,16 +24,48 @@ jobs:
       - name: Check out the site
         uses: actions/checkout@v4
 
-      - name: Prepare GitHub Pages (enables it on first run)
+      - name: Check how GitHub Pages is configured
+        id: pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          config=$(gh api "repos/${{ github.repository }}/pages" 2>/dev/null)
+          build_type=$(printf '%s' "$config" | jq -r '.build_type // empty' 2>/dev/null)
+
+          if [ "$build_type" = "workflow" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            echo "Pages is set to GitHub Actions — deploying this build."
+            exit 0
+          fi
+
+          if [ -z "$config" ]; then
+            # Pages is not enabled yet. Try to switch it on; this needs admin rights.
+            if gh api -X POST "repos/${{ github.repository }}/pages" -f build_type=workflow >/dev/null 2>&1; then
+              echo "deploy=true" >> "$GITHUB_OUTPUT"
+              echo "Enabled GitHub Pages with the GitHub Actions source."
+              exit 0
+            fi
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GitHub Pages is not enabled. Turn it on in Settings → Pages, then run this workflow."
+            exit 0
+          fi
+
+          # Pages is served from a branch source; GitHub publishes that on its own.
+          echo "deploy=false" >> "$GITHUB_OUTPUT"
+          echo "Pages is served from the '$build_type' source; nothing for this workflow to deploy."
+
+      - name: Prepare GitHub Pages
+        if: steps.pages.outputs.deploy == 'true'
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload the static site
+        if: steps.pages.outputs.deploy == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
       - name: Deploy to GitHub Pages
+        if: steps.pages.outputs.deploy == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
