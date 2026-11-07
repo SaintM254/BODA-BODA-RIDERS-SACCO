@@ -32,6 +32,7 @@
 
   const SITE = 'Boda Boda Sacco';
   let calcState = { amount: 20000, months: 6, typeId: 'repairs', rate: 1.2 };
+  let lastPath = null;
 
   /* ---------------------------------------------------------
      Small helpers
@@ -303,6 +304,8 @@
   function render(opts) {
     opts = opts || {};
     const path = effectivePath();
+    const pathChanged = path !== lastPath;
+    lastPath = path;
     const member = Store.current();
     const route = ROUTES[path];
 
@@ -315,6 +318,7 @@
     window.I18N.translateStatic(document.body);
     updateNav(path);
     bindView(path);
+    if (pathChanged) setMenu(false);
     if (opts.scroll !== false) {
       window.scrollTo(0, 0);
       if (view.focus) view.focus({ preventScroll: true });
@@ -352,8 +356,59 @@
       btn.classList.toggle('on', on);
       btn.setAttribute('aria-pressed', String(on));
     });
+  }
 
-    setMenu(false);
+  /* Switching language re-renders the view so every string is rebuilt in the new
+     language, but that must not move the page or throw away what the visitor was
+     doing: the scroll offset, field values, checkbox state and focus are carried
+     across. */
+  function captureViewState() {
+    const state = { scrollY: window.scrollY, fields: [], focus: null };
+    $$('#view input, #view select, #view textarea').forEach(function (el) {
+      const name = el.getAttribute('name');
+      if (!name) return;
+      state.fields.push({ name: name, type: el.type, value: el.value, checked: !!el.checked });
+    });
+    const active = document.activeElement;
+    if (active && active.getAttribute && active.getAttribute('name') && $('#view').contains(active)) {
+      state.focus = { name: active.getAttribute('name'), start: null, end: null };
+      try {
+        state.focus.start = active.selectionStart;
+        state.focus.end = active.selectionEnd;
+      } catch (e) { /* not a text field */ }
+    }
+    return state;
+  }
+
+  function restoreViewState(state) {
+    if (!state) return;
+    const fields = $$('#view input, #view select, #view textarea');
+    function byName(name) {
+      return fields.filter(function (el) { return el.getAttribute('name') === name; })[0] || null;
+    }
+    state.fields.forEach(function (saved) {
+      const el = byName(saved.name);
+      if (!el) return;
+      if (saved.type === 'checkbox' || saved.type === 'radio') el.checked = saved.checked;
+      else el.value = saved.value;
+    });
+    if (state.focus) {
+      const el = byName(state.focus.name);
+      if (el && typeof el.focus === 'function') {
+        el.focus({ preventScroll: true });
+        if (state.focus.start != null && el.setSelectionRange) {
+          try { el.setSelectionRange(state.focus.start, state.focus.end); } catch (e) { /* ignore */ }
+        }
+      }
+    }
+    if (window.scrollY !== state.scrollY) window.scrollTo(0, state.scrollY);
+  }
+
+  function syncMenuLabel() {
+    const menu = $('#menu');
+    const toggle = $('.nav-toggle');
+    if (!menu || !toggle) return;
+    toggle.setAttribute('aria-label', menu.classList.contains('open') ? T('Close menu') : T('Open menu'));
   }
 
   function bindView(path) {
@@ -1482,8 +1537,12 @@
   document.addEventListener('click', function (e) {
     const langBtn = e.target.closest('[data-lang]');
     if (langBtn) {
+      // Translate only: no scrolling, no closing the menu, no lost input.
+      const snapshot = captureViewState();
       window.I18N.setLang(langBtn.getAttribute('data-lang'));
       render({ scroll: false });
+      restoreViewState(snapshot);
+      syncMenuLabel();
       return;
     }
 
