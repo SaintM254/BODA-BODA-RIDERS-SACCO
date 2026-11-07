@@ -96,7 +96,17 @@ Opening `index.html` directly also works in most browsers, though a local server
 
 ## Publishing
 
-The site is served by **GitHub Pages** from the `main` branch, repository root. To publish an update, merge or push to `main` — Pages rebuilds automatically.
+The site is published with **GitHub Pages** from the `main` branch, repository root, alongside a Pages workflow in `.github/workflows/deploy-pages.yml`.
+
+One-time setup (needs a repository admin):
+
+1. Open **Settings → Pages**.
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+3. Choose branch **main** and folder **/ (root)**, then **Save**.
+
+The site goes live at https://saintm254.github.io/BODA-BODA-RIDERS-SACCO/ and republishes on every push to `main`.
+
+Prefer the Actions pipeline? Set **Source** to **GitHub Actions** instead and run the **Deploy to GitHub Pages** workflow from the Actions tab — it publishes the same files.
 
 ---
 
