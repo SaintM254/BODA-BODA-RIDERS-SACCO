@@ -12,7 +12,7 @@ window.I18N = (function () {
     'Home': 'Mwanzo',
     'Savings': 'Akiba',
     'Loans': 'Mikopo',
-    'Rider perks': 'Manufaa ya waendeshaji',
+    'Advantages': 'Faida',
     'Join': 'Jiunge',
     'My account': 'Akaunti yangu',
     'Log in': 'Ingia',
@@ -171,8 +171,8 @@ window.I18N = (function () {
     'Need a loan?': 'Unahitaji mkopo?',
     'Join the Sacco, save a little, and your limit starts growing today.': 'Jiunge na Sacco, weka akiba kidogo, na kikomo chako kianze kukua leo.',
 
-    /* Perks */
-    'More rider advantages': 'Faida zaidi kwa wapanda boda',
+    /* Advantages */
+    'Advantages of membership': 'Faida za uanachama',
     'Membership is more than savings and loans.': 'Uanachama ni zaidi ya akiba na mikopo.',
     'M-Pesa and USSD': 'M-Pesa na USSD',
     'Save and repay with M-Pesa. USSD support means it works on any phone, no data needed.': 'Weka akiba na lipa kwa M-Pesa. Huduma ya USSD inamaanisha inafanya kazi kwenye simu yoyote, bila data.',

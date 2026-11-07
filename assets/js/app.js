@@ -59,6 +59,37 @@
   function icon(name, cls) {
     return '<svg class="icon ' + (cls || '') + '" aria-hidden="true"><use href="#i-' + name + '"/></svg>';
   }
+
+  /* Photography. Files live in assets/photos/ as <name>-<width>.avif plus a
+     .jpg fallback; swap in your own shots there, keeping the names and widths.
+     Native width and height keep the aspect ratio so nothing jumps on load. */
+  const PHOTOS = {
+    'hero-rider':    { w: 900,  h: 1117, widths: [450, 675, 900],   sizes: '(max-width: 900px) 92vw, 460px' },
+    'community':     { w: 1200, h: 670,  widths: [600, 900, 1200],  sizes: '(max-width: 860px) 100vw, 580px' },
+    'repair':        { w: 1192, h: 800,  widths: [600, 900, 1192],  sizes: '(max-width: 860px) 92vw, 520px' },
+    'savings-phone': { w: 1192, h: 800,  widths: [600, 900, 1192],  sizes: '(max-width: 900px) 92vw, 500px' }
+  };
+
+  function photo(name, alt, opts) {
+    const p = PHOTOS[name];
+    if (!p) return '';
+    opts = opts || {};
+    const base = 'assets/photos/' + name + '-';
+    const widest = p.widths[p.widths.length - 1];
+    const srcset = function (ext) {
+      return p.widths.map(function (w) { return base + w + '.' + ext + ' ' + w + 'w'; }).join(', ');
+    };
+    const sizes = opts.sizes || p.sizes;
+    return '<picture>' +
+      '<source type="image/avif" srcset="' + srcset('avif') + '" sizes="' + sizes + '">' +
+      '<img src="' + base + widest + '.jpg" srcset="' + srcset('jpg') + '" sizes="' + sizes + '"' +
+        ' width="' + p.w + '" height="' + p.h + '"' +
+        ' alt="' + esc(alt) + '"' +
+        (opts.lazy === false || opts.priority ? '' : ' loading="lazy"') +
+        (opts.priority ? ' fetchpriority="high"' : '') +
+        ' decoding="async">' +
+      '</picture>';
+  }
   function firstName(member) {
     return String(member.name || '').trim().split(/\s+/)[0] || 'rider';
   }
@@ -220,7 +251,7 @@
     '/home': { title: 'Home', view: renderHome },
     '/savings': { title: 'Savings', view: renderSavings },
     '/loans': { title: 'Loans', view: renderLoans },
-    '/perks': { title: 'Rider perks', view: renderPerks },
+    '/perks': { title: 'Advantages', view: renderPerks },
     '/join': { title: 'Become a member', view: renderJoin },
     '/login': { title: 'Log in', view: renderLogin },
     '/dashboard': { title: 'My account', view: renderDashboard, auth: true }
@@ -378,7 +409,7 @@
         '<div class="hero-visual">' +
           '<div class="hero-badge">' + icon('check') + ' <span>Member owned</span></div>' +
           '<figure class="hero-image">' +
-            '<img src="assets/img/hero-rider.jpg" alt="A boda boda rider on his motorbike in Nairobi" width="900" height="1117" fetchpriority="high">' +
+            photo('hero-rider', 'A boda boda rider on his motorbike in Nairobi', { priority: true }) +
             '<figcaption class="float-card">' +
               '<div class="iconbox">' + icon('chart', 'small') + '</div>' +
               '<div><strong>Savings growing</strong><span>Every day counts</span></div>' +
@@ -398,7 +429,7 @@
         '</div>' +
         '<div class="split" style="margin-top:56px">' +
           '<div class="split-media"><figure class="photo-card" style="aspect-ratio:4/3">' +
-            '<img src="assets/img/savings-phone.jpg" alt="A rider checking his savings on his phone" loading="lazy" width="1192" height="800">' +
+            photo('savings-phone', 'A rider checking his savings on his phone') +
             '<figcaption><strong>M-Pesa in, savings out</strong>Save in seconds from the phone in your pocket.</figcaption>' +
           '</figure></div>' +
           '<div>' +
@@ -440,7 +471,7 @@
     '<section class="section tight">' +
       '<div class="wrap">' +
         '<div class="media-band">' +
-          '<img src="assets/img/community.jpg" alt="A group of riders standing with their motorbikes at a stage" loading="lazy" width="1200" height="670">' +
+          photo('community', 'A group of riders standing with their motorbikes at a stage') +
           '<div class="media-band-copy">' +
             '<h2>A Sacco that belongs to riders</h2>' +
             '<p>Every member owns a share. Profits come back to the people who saved — not to outsiders.</p>' +
@@ -528,7 +559,7 @@
           '<p style="margin-top:20px">' + T('Final dividend rates are proposed by the board and approved by members at the AGM.') + '</p>' +
         '</div>' +
         '<div class="split-media"><figure class="photo-card" style="aspect-ratio:4/3">' +
-          '<img src="assets/img/community.jpg" alt="Riders at a stage" loading="lazy" width="1200" height="670">' +
+          photo('community', 'Riders at a stage') +
           '<figcaption><strong>' + T('Member owned') + '</strong>' + T('Profits come back to riders.') + '</figcaption>' +
         '</figure></div>' +
       '</div></div>' +
@@ -645,7 +676,7 @@
         '</div>' +
         '<div class="split" style="margin-top:56px">' +
           '<div class="split-media"><figure class="photo-card" style="aspect-ratio:4/3">' +
-            '<img src="assets/img/repair.jpg" alt="A mechanic repairing a boda boda engine beside its rider" loading="lazy" width="1192" height="800">' +
+            photo('repair', 'A mechanic repairing a boda boda engine beside its rider') +
             '<figcaption><strong>Keep the bike earning</strong>Repairs should not cost you a week of fares.</figcaption>' +
           '</figure></div>' +
           '<div>' +
@@ -679,7 +710,7 @@
       { icon: 'users', title: 'A community of riders', text: 'Belong to a group that backs each other up, on and off the road.' }
     ];
     return '' +
-    '<div class="wrap"><div class="page-title"><h1>More rider advantages</h1><p>Membership is more than savings and loans.</p></div></div>' +
+    '<div class="wrap"><div class="page-title"><h1>Advantages of membership</h1><p>Membership is more than savings and loans.</p></div></div>' +
     '<section class="section">' +
       '<div class="wrap"><div class="grid g2">' +
         perks.map(function (p) {
@@ -691,7 +722,7 @@
     '</section>' +
     '<section class="section tight">' +
       '<div class="wrap"><div class="media-band">' +
-        '<img src="assets/img/community.jpg" alt="Riders together at a stage" loading="lazy" width="1200" height="670">' +
+        photo('community', 'Riders together at a stage') +
         '<div class="media-band-copy">' +
           '<h2>You are not riding alone</h2>' +
           '<p>A Sacco is only as strong as its members. Ride with people who understand the road, the fares and the bad days.</p>' +
@@ -735,7 +766,7 @@
       '</form>' +
       '<aside class="form-side">' +
         '<figure class="photo-card">' +
-          '<img src="assets/img/savings-phone.jpg" alt="A rider using M-Pesa on his phone" width="1192" height="800">' +
+          photo('savings-phone', 'A rider using M-Pesa on his phone', { lazy: false }) +
           '<figcaption><strong>Start with KSh 50</strong>Autosave from your M-Pesa, every day.</figcaption>' +
         '</figure>' +
         '<div class="info-card">' +

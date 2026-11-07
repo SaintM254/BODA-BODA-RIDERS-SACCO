@@ -183,6 +183,8 @@ button { font: inherit; }
 .page-title p { color: var(--muted); font-size: clamp(17px, 2vw, 19px); max-width: 600px; margin: 0 auto; }
 
 /* ---------- Photos ---------- */
+/* <picture> only wraps the img, so give it the same box the img used to fill */
+.hero-image picture, .photo-card picture, .media-band picture { display: block; width: 100%; height: 100%; }
 .photo-card { position: relative; border-radius: 28px; overflow: hidden; box-shadow: var(--shadow-md); }
 .photo-card img { width: 100%; height: 100%; object-fit: cover; }
 .photo-card figcaption {

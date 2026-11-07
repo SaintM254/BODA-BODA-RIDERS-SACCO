@@ -26,7 +26,7 @@ Every feature in the brief now actually works in the browser, rather than being 
 | Transaction history | Works — every deposit, withdrawal, loan and repayment is listed |
 | Dividend projection (12% sample rate) | Works — projected from the locked balance |
 | English / Kiswahili switch | Works across every page, including the dashboard and dialogs |
-| Rider perks and marketing pages | Fully fleshed out with photography |
+| Advantages and marketing pages | Fully fleshed out with photography |
 | Mobile navigation, dialogs, toasts, form errors, keyboard support | Works |
 
 ### Demo account
@@ -61,7 +61,9 @@ assets/css/styles.css      Design system and all layouts
 assets/js/i18n.js          English → Kiswahili dictionary and translator
 assets/js/store.js         Accounts, savings and loan rules (localStorage)
 assets/js/app.js           Router, views, dialogs and interactions
-assets/img/                Photography, plus the brand logo (logo.svg, logo-touch.png)
+assets/img/                Brand assets (logo.svg, logo-touch.png)
+assets/photos/             Responsive photos — replace these with your own (see its README)
+scripts/make-photos.sh     Regenerates assets/photos/ from full-size originals
 assets/favicon.svg         Fallback site icon, used if logo.svg cannot be read
 assets/og-image.jpg        1200×630 social preview image
 .nojekyll                  Serve files as-is on GitHub Pages
@@ -73,6 +75,12 @@ The brand logo is `assets/img/logo.svg` — a 1627×886 (≈1.84:1) lockup whose
 `assets/favicon.svg` as the automatic fallback; `logo-touch.png` (180×180) is the
 `apple-touch-icon`.
 
+Photos are served responsively: each one exists as `<name>-<width>.avif` with a
+`.jpg` fallback, and the markup uses `<picture>` + `srcset`/`sizes`, so a phone
+downloads roughly 40 KB instead of 200 KB. Nothing in the HTML refers to a
+single fixed image file, so swapping photography means replacing files in
+`assets/photos/` only.
+
 ### Routes
 
 Hash routing keeps everything working on GitHub Pages without server rewrites:
@@ -80,7 +88,7 @@ Hash routing keeps everything working on GitHub Pages without server rewrites:
 - `#/home` — marketing home
 - `#/savings` — savings products and member balances
 - `#/loans` — products, eligibility and the loan calculator
-- `#/perks` — rider benefits
+- `#/perks` — advantages of membership
 - `#/join` — membership form
 - `#/login` — login and demo account
 - `#/dashboard` — the member's account (login required)
@@ -119,5 +127,6 @@ Prefer the Actions pipeline? Set **Source** to **GitHub Actions** instead and ru
 ## Notes and limits
 
 - All figures (rates, dividends, limits) are sample values for the prototype and are set in `assets/js/store.js` and the loan list in `assets/js/app.js`.
-- Photography is AI-generated for this prototype and is illustrative only.
+- Photography is AI-generated for this prototype and is illustrative only. Swap it
+  in `assets/photos/` — the folder's README and `scripts/make-photos.sh` explain how.
 - The site is a demonstration, not a licensed financial product. It does not collect or transmit personal data.
