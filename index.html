@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boda Boda Sacco</title>
+<style>
+  :root {
+    --navy: #1D3557;
+    --navy-deep: #12233D;
+    --navy-soft: #E9EEF5;
+    --red: #E63946;
+    --ink: #14213A;
+    --muted: #5B6B80;
+    --line: #E3E8EF;
+    --white: #FFFFFF;
+    --paper: #F7F9FC;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--white); color: var(--ink); line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .icon { width: 28px; height: 28px; fill: none; stroke: var(--navy); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .icon.small { width: 20px; height: 20px; }
+  .wrap { max-width: 1100px; margin: auto; padding: 0 24px; }
+
+  /* ONE top bar */
+  .topbar { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .topbar-inner { max-width: 1100px; margin: auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { font-weight: 700; font-size: 18px; color: var(--navy); letter-spacing: -0.2px; cursor: pointer; white-space: nowrap; }
+  .menu { display: flex; align-items: center; gap: 26px; }
+  .menu a { color: var(--muted); font-size: 15px; cursor: pointer; text-decoration: none; transition: color .2s; }
+  .menu a:hover, .menu a.current { color: var(--navy); }
+  .pill { background: var(--navy); color: var(--white) !important; padding: 9px 18px; border-radius: 980px; font-weight: 500; }
+  @media (max-width: 760px) {
+    .menu a.hide-sm { display: none; }
+    .menu { gap: 16px; }
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .btn { display: inline-block; border: none; cursor: pointer; background: var(--navy); color: var(--white); padding: 14px 28px; border-radius: 980px; font-size: 16px; font-weight: 500; transition: opacity .2s, transform .2s; font-family: inherit; }
+  .btn:hover { opacity: .9; }
+  .btn.accent { background: var(--red); }
+  .btn.light { background: var(--white); color: var(--navy); }
+  .btn.ghost { background: transparent; color: var(--navy); padding-left: 8px; padding-right: 8px; }
+
+  /* HERO: text left, image placeholder right. Stacks on phone. */
+  .hero { background: linear-gradient(180deg, var(--paper) 0%, var(--white) 100%); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; padding: clamp(40px, 8vw, 90px) 0; }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; text-align: center; } .hero-actions { justify-content: center; } .hero-stats { justify-content: center; } }
+  .eyebrow { display: inline-block; color: var(--red); font-weight: 600; font-size: 14px; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 16px; }
+  .hero h1 { font-size: clamp(36px, 6vw, 66px); line-height: 1.04; letter-spacing: -1.6px; font-weight: 700; color: var(--navy); margin-bottom: 20px; }
+  .hero p.lead { font-size: clamp(17px, 2vw, 21px); color: var(--muted); max-width: 520px; margin-bottom: 30px; }
+  @media (max-width: 860px) { .hero p.lead { margin-left: auto; margin-right: auto; } }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .hero-stats { display: flex; gap: 36px; margin-top: 40px; flex-wrap: wrap; }
+  .hero-stats div strong { display: block; font-size: 26px; color: var(--navy); letter-spacing: -0.5px; }
+  .hero-stats div span { font-size: 13px; color: var(--muted); }
+
+  /* IMAGE PLACEHOLDER: replace the placeholder block with your photo */
+  .hero-image { position: relative; aspect-ratio: 4 / 5; max-height: 560px; width: 100%; border-radius: 32px; background: linear-gradient(145deg, var(--navy) 0%, var(--navy-deep) 100%); overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 30px 60px rgba(29,53,87,0.18); }
+  .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph { text-align: center; color: rgba(255,255,255,0.75); padding: 24px; }
+  .ph .icon { stroke: rgba(255,255,255,0.8); width: 56px; height: 56px; margin-bottom: 14px; }
+  .ph p { font-size: 15px; }
+  .float-card { position: absolute; left: 20px; bottom: 20px; background: rgba(255,255,255,0.95); border-radius: 18px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+  .float-card strong { display: block; color: var(--navy); font-size: 15px; }
+  .float-card span { font-size: 13px; color: var(--muted); }
+
+  /* Sections */
+  .section { padding: clamp(48px, 8vw, 96px) 0; }
+  .section.tint { background: var(--paper); }
+  .head { text-align: center; margin-bottom: 44px; }
+  .head h2 { font-size: clamp(28px, 4.2vw, 42px); letter-spacing: -0.9px; color: var(--navy); margin-bottom: 10px; }
+  .head p { color: var(--muted); max-width: 540px; margin: 0 auto; font-size: 17px; }
+  .grid { display: grid; gap: 20px; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 960px) { .g4 { grid-template-columns: repeat(2, 1fr); } .g3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .g4, .g3, .g2 { grid-template-columns: 1fr; } }
+  .tile { background: var(--white); border: 1px solid var(--line); border-radius: 22px; padding: 28px; transition: transform .25s, box-shadow .25s; }
+  .tile:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(29,53,87,0.08); }
+  .section.tint .tile { border-color: transparent; }
+  .iconbox { width: 52px; height: 52px; border-radius: 16px; background: var(--navy-soft); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .tile h3 { font-size: 19px; color: var(--navy); margin-bottom: 6px; font-weight: 600; }
+  .tile p { color: var(--muted); font-size: 15px; }
+  .tag { display: inline-block; margin-top: 14px; font-size: 12px; font-weight: 600; color: var(--red); letter-spacing: .4px; }
+
+  /* Page title block for inner pages */
+  .page-title { text-align: center; padding: clamp(48px, 8vw, 90px) 0 clamp(8px, 2vw, 20px); }
+  .page-title h1 { font-size: clamp(34px, 5.5vw, 56px); letter-spacing: -1.4px; color: var(--navy); margin-bottom: 12px; }
+  .page-title p { color: var(--muted); font-size: 19px; max-width: 560px; margin: 0 auto; }
+
+  /* Calculator */
+  .calc { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: stretch; }
+  @media (max-width: 860px) { .calc { grid-template-columns: 1fr; } }
+  .calc-form { background: var(--white); border: 1px solid var(--line); border-radius: 26px; padding: 32px; }
+  .field { margin-bottom: 28px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .field-top label { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .field-top output { font-size: 24px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 6px; background: var(--navy-soft); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--white); border: 2px solid var(--navy); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: var(--white); border: 2px solid var(--navy); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 8px; }
+  select { width: 100%; padding: 14px 16px; font-size: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); color: var(--ink); font-family: inherit; outline: none; }
+  select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px var(--navy-soft); }
+  .result { background: linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%); color: var(--white); border-radius: 26px; padding: 36px 32px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 30px 60px rgba(29,53,87,0.2); }
+  .result .small-label { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .result .big { font-size: clamp(36px, 5vw, 52px); font-weight: 700; letter-spacing: -1.2px; margin: 6px 0 4px; }
+  .result .per { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .rows { margin: 28px 0; }
+  .rows div { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 15px; }
+  .rows div span:first-child { color: rgba(255,255,255,0.7); }
+  .rows div:last-child { border-bottom: none; }
+  .fine { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 14px; }
+
+  /* Perks list */
+  .perk { display: flex; gap: 18px; align-items: flex-start; }
+  .perk .iconbox { flex-shrink: 0; margin-bottom: 0; }
+
+  /* CTA band */
+  .cta { background: var(--navy); color: var(--white); border-radius: 32px; padding: clamp(36px, 6vw, 64px); text-align: center; }
+  .cta h2 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -0.8px; margin-bottom: 10px; }
+  .cta p { color: rgba(255,255,255,0.75); margin-bottom: 26px; }
+
+  /* Forms */
+  .form-wrap { max-width: 440px; margin: 0 auto; padding: clamp(40px, 8vw, 90px) 24px; }
+  .form-wrap h2 { font-size: 32px; letter-spacing: -0.8px; color: var(--navy); margin-bottom: 8px; }
+  .form-wrap .lead { color: var(--muted); margin-bottom: 28px; }
+  .form-wrap label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-top: 16px; }
+  .form-wrap input, .form-wrap select { width: 100%; margin-top: 6px; padding: 14px 16px; font-size: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); color: var(--ink); font-family: inherit; outline: none; }
+  .form-wrap input:focus, .form-wrap select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px var(--navy-soft); }
+  .form-wrap .btn { width: 100%; margin-top: 28px; }
+  .hint { font-size: 13px; color: var(--muted); text-align: center; margin-top: 14px; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 40px; padding: 40px 24px; text-align: center; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--navy); margin: 0 10px; cursor: pointer; text-decoration: none; }
+
+  /* Language switch: EN | SW */
+  .lang { display: inline-flex; align-items: center; gap: 8px; }
+  .lang .icon { width: 18px; height: 18px; stroke: var(--muted); }
+  .seg { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 980px; background: var(--white); }
+  .seg button { border: none; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 980px; cursor: pointer; transition: background .2s, color .2s; }
+  .seg button:hover { color: var(--navy); }
+  .seg button.on { background: var(--navy); color: var(--white); }
+  .seg button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+  @media (max-width: 480px) { .lang .icon { display: none; } .brand { font-size: 16px; } .menu { gap: 10px; } .seg button { padding: 5px 10px; } }
+</style>
+</head>
+<body>
+
+<!-- LINE ICON LIBRARY: thin outline icons, reused across the site -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-money" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="3"/><circle cx="12" cy="12" r="2.8"/><path d="M6 9.5v.01M18 14.5v.01"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="3"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></symbol>
+  <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5l3-6h5l2.5 3"/><path d="M13.5 10.5l-1-3.5h-2.5"/><path d="M14 13.5h4.5"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0 4.8 4.8l-9.8 9.8a2.1 2.1 0 0 1-3-3l9.8-9.8z" transform="scale(.92) translate(1 0)"/><path d="M15 3.5a4 4 0 0 0-3.5 5.5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.3v.01"/></symbol>
+  <symbol id="i-helmet" viewBox="0 0 24 24"><path d="M3.5 15a8.5 8.5 0 0 1 17 0v2.5h-17z"/><path d="M3.5 15h10.5l1.5-3.5h5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5c-2-1.5-4.5-2-8-2v13c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2v-13c-3.5 0-6 .5-8 2z"/><path d="M12 6.5v13"/></symbol>
+  <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="12.5" rx="3"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5"/><path d="M3 13h18"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M10.5 18.5h3"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.5c1.5 1.5 3.5 2.3 5.5 2.3s4-.8 5.5-2.3v-4.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.3 8-8 9-4.7-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 20c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6"/><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M18 14.3c2.2.7 3.5 2.7 3.5 5.7"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2.5h8l5 5V20a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 20V4A1.5 1.5 0 0 1 6 2.5z"/><path d="M14 2.5V8h5M8.5 13h7M8.5 17h5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3.5 20.5h17"/><path d="M6.5 17v-5M12 17V7.5M17.5 17v-8.5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2.5h7L17 8h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9s1.3-6.3 3.8-9z"/></symbol>
+</svg>
+
+<!-- THE ONLY TOP BAR (on every page) -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" onclick="show('home')">Boda Boda Sacco</div>
+    <div class="menu">
+      <a class="hide-sm" data-page="home" onclick="show('home')">Home</a>
+      <a class="hide-sm" data-page="savings" onclick="show('savings')">Savings</a>
+      <a class="hide-sm" data-page="loans" onclick="show('loans')">Loans</a>
+      <a class="hide-sm" data-page="perks" onclick="show('perks')">Rider perks</a>
+      <div class="lang" role="group" aria-label="Language">
+        <svg class="icon"><use href="#i-globe"/></svg>
+        <div class="seg">
+          <button type="button" id="lang-en" class="on" aria-pressed="true" title="English" onclick="setLang('en')">EN</button>
+          <button type="button" id="lang-sw" aria-pressed="false" title="Kiswahili" onclick="setLang('sw')">SW</button>
+        </div>
+      </div>
+      <a class="pill" onclick="show('signup')">Join</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HOME ============ -->
+<div id="home" class="page active">
+
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Built for riders</span>
+        <h1>Your ride. Your savings. Your future.</h1>
+        <p class="lead">Save from just KSh 50 a day, borrow when the road gets tough, and grow together with riders like you.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="show('signup')">Become a member</button>
+          <button class="btn ghost" onclick="show('loans')">Try the loan calculator &rarr;</button>
+        </div>
+        <div class="hero-stats">
+          <div><strong>KSh 50</strong><span>Start saving daily</span></div>
+          <div><strong>24 hrs</strong><span>Loan processing</span></div>
+          <div><strong>Yearly</strong><span>Dividends</span></div>
+        </div>
+      </div>
+
+      <!-- IMAGE PLACEHOLDER: to add your photo, delete the <div class="ph"> block below
+           and put this line in its place:  <img src="rider.jpg" alt="Boda boda rider">
+           Save your photo in the same folder as index.html and name it rider.jpg -->
+      <div class="hero-image">
+        <div class="ph">
+          <svg class="icon"><use href="#i-camera"/></svg>
+          <p>Your hero image goes here<br>Portrait photo works best</p>
+        </div>
+        <div class="float-card">
+          <div class="iconbox" style="margin:0;width:42px;height:42px;border-radius:12px;"><svg class="icon small"><use href="#i-chart"/></svg></div>
+          <div><strong>Savings growing</strong><span>Every day counts</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="head"><h2>Save the way you ride</h2><p>Simple savings built around a rider's day.</p></div>
+      <div class="grid g3">
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-money"/></svg></div><h3>Daily boda savings</h3><p>Turn on autosave from as little as KSh 50 a day. Small amounts, every day, add up.</p><span class="tag">FROM KSH 50 A DAY</span></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-lock"/></svg></div><h3>Locked savings</h3><p>Non-withdrawable savings that earn you annual dividends at the end of the year.</p><span class="tag">ANNUAL DIVIDENDS</span></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-bike"/></svg></div><h3>Bike replacement fund</h3><p>Saving for a new motorbike or an engine overhaul? Set it aside here, bit by bit.</p><span class="tag">YOUR NEXT BIKE</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section tint">
+    <div class="wrap">
+      <div class="head"><h2>Loans made for riders</h2><p>Real help for the real things that come up on the road.</p></div>
+      <div class="grid g3">
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-bike"/></svg></div><h3>Motorbike asset loan</h3><p>Get your own bike and start earning for yourself.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-alert"/></svg></div><h3>Emergency loan</h3><p>Quick support when something urgent comes up.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-wrench"/></svg></div><h3>Spare parts and repairs</h3><p>Keep your bike on the road and earning.</p></div>
+      </div>
+      <p style="text-align:center;margin-top:32px;"><button class="btn" onclick="show('loans')">See all loans</button></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="cta">
+        <h2>Ready to start?</h2>
+        <p>Join in under a minute. Start with KSh 50.</p>
+        <button class="btn light" onclick="show('signup')">Become a member</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SAVINGS ============ -->
+<div id="savings" class="page">
+  <div class="wrap">
+    <div class="page-title"><h1>Savings</h1><p>Three simple ways to put money aside, all built for riders.</p></div>
+  </div>
+  <div class="section">
+    <div class="wrap">
+      <div class="grid g3">
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-money"/></svg></div><h3>Daily boda savings</h3><p>Autosave from KSh 50 a day straight from your M-Pesa. Choose an amount that fits your day.</p><span class="tag">AUTOSAVE</span></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-lock"/></svg></div><h3>Locked savings</h3><p>Non-withdrawable savings that grow untouched and earn annual dividends.</p><span class="tag">ANNUAL DIVIDENDS</span></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-bike"/></svg></div><h3>Bike replacement fund</h3><p>For a new motorbike or a big engine overhaul. Build it up a little every day.</p><span class="tag">BIKE GOALS</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOANS ============ -->
+<div id="loans" class="page">
+  <div class="wrap">
+    <div class="page-title"><h1>Loans for riders</h1><p>Pick the loan that fits what you need, then see what it costs.</p></div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="grid g3">
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-bike"/></svg></div><h3>Motorbike asset loan</h3><p>Finance a bike of your own.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-alert"/></svg></div><h3>Emergency loan</h3><p>Fast help for urgent needs.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-wrench"/></svg></div><h3>Spare parts and repairs</h3><p>Fix it and get back on the road.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-helmet"/></svg></div><h3>Gear and license</h3><p>Helmets, reflectors, and your license.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-book"/></svg></div><h3>School fees loan</h3><p>Keep your children in school.</p></div>
+        <div class="tile"><div class="iconbox"><svg class="icon"><use href="#i-briefcase"/></svg></div><h3>Business booster</h3><p>Grow a side business beyond the bike.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section tint">
+    <div class="wrap">
+      <div class="head"><h2>Loan calculator</h2><p>Slide to see your estimated monthly repayment.</p></div>
+      <div class="calc">
+        <div class="calc-form">
+          <div class="field">
+            <div class="field-top"><label for="amount">Loan amount</label><output id="amountOut">KSh 20,000</output></div>
+            <input type="range" id="amount" min="2000" max="200000" step="1000" value="20000">
+            <div class="range-labels"><span>KSh 2,000</span><span>KSh 200,000</span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="months">Repayment period</label><output id="monthsOut">6 months</output></div>
+            <input type="range" id="months" min="1" max="36" step="1" value="6">
+            <div class="range-labels"><span>1 month</span><span>36 months</span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="type">Loan type</label></div>
+            <select id="type">
+              <option value="1.5">Emergency loan</option>
+              <option value="1.2" selected>Spare parts and repairs</option>
+              <option value="1.0">Motorbike asset loan</option>
+              <option value="1.2">Gear and license loan</option>
+              <option value="1.2">School fees loan</option>
+              <option value="1.5">Business booster loan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="result">
+          <div>
+            <div class="small-label">Estimated monthly repayment</div>
+            <div class="big" id="monthly">KSh 0</div>
+            <div class="per">per month</div>
+            <div class="rows">
+              <div><span>Interest rate</span><span id="rateOut">1.2% per month</span></div>
+              <div><span>Total interest</span><span id="interestOut">KSh 0</span></div>
+              <div><span>Total to repay</span><span id="totalOut">KSh 0</span></div>
+            </div>
+          </div>
+          <div>
+            <button class="btn light" style="width:100%" onclick="show('signup')">Apply as a member</button>
+            <p class="fine">Sample rates for the prototype only. Final rates will be set by the Sacco.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RIDER PERKS ============ -->
+<div id="perks" class="page">
+  <div class="wrap">
+    <div class="page-title"><h1>More rider advantages</h1><p>Membership is more than savings and loans.</p></div>
+  </div>
+  <div class="section">
+    <div class="wrap">
+      <div class="grid g2">
+        <div class="tile perk"><div class="iconbox"><svg class="icon"><use href="#i-phone"/></svg></div><div><h3>M-Pesa and USSD</h3><p>Save and repay with M-Pesa. USSD support means it works on any phone, no data needed.</p></div></div>
+        <div class="tile perk"><div class="iconbox"><svg class="icon"><use href="#i-cap"/></svg></div><div><h3>Rider training</h3><p>Road safety, first aid, customer service and more, taught to members.</p></div></div>
+        <div class="tile perk"><div class="iconbox"><svg class="icon"><use href="#i-doc"/></svg></div><div><h3>License and compliance help</h3><p>Get help with your license and the paperwork that keeps you legal on the road.</p></div></div>
+        <div class="tile perk"><div class="iconbox"><svg class="icon"><use href="#i-chart"/></svg></div><div><h3>Annual dividends</h3><p>When the Sacco does well, members share in the profit every year.</p></div></div>
+        <div class="tile perk"><div class="iconbox"><svg class="icon"><use href="#i-shield"/></svg></div><div><h3>Insurance cover</h3><p>Protection for you and your bike through trusted insurance partners.</p></div></div>
+        <div class="tile perk"><div class="iconbox"><svg class="icon"><use href="#i-users"/></svg></div><div><h3>A community of riders</h3><p>Belong to a group that backs each other up, on and off the road.</p></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="cta"><h2>Ride with us</h2><p>Join the Sacco and start with KSh 50.</p><button class="btn light" onclick="show('signup')">Become a member</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SIGN UP ============ -->
+<div id="signup" class="page">
+  <form class="form-wrap" onsubmit="event.preventDefault(); alert(tr('Prototype only. No real account was created.')); show('home');">
+    <h2>Become a member</h2>
+    <p class="lead">It takes less than a minute.</p>
+    <label>Full name<input type="text" placeholder="John Kamau" required></label>
+    <label>Phone number<input type="tel" placeholder="07XX XXX XXX" required></label>
+    <label>ID number<input type="text" placeholder="National ID" required></label>
+    <label>Stage or area<input type="text" placeholder="Githurai Stage"></label>
+    <label>Daily saving
+      <select><option>KSh 50</option><option>KSh 100</option><option>KSh 200</option><option>KSh 500</option></select>
+    </label>
+    <label>Create a PIN<input type="password" placeholder="4 digits" required></label>
+    <button class="btn" type="submit">Join now</button>
+    <p class="hint">Prototype only. No real account is created.</p>
+  </form>
+</div>
+
+<footer>
+  <div>
+    <a onclick="show('home')">Home</a>
+    <a onclick="show('savings')">Savings</a>
+    <a onclick="show('loans')">Loans</a>
+    <a onclick="show('perks')">Rider perks</a>
+  </div>
+  <p style="margin-top:14px">Boda Boda Sacco. Prototype with sample content.</p>
+</footer>
+
+<script>
+  /* Switch between pages */
+  function show(id) {
+    var pages = document.querySelectorAll('.page');
+    for (var i = 0; i < pages.length; i++) { pages[i].classList.remove('active'); }
+    document.getElementById(id).classList.add('active');
+    var links = document.querySelectorAll('.menu a[data-page]');
+    for (var j = 0; j < links.length; j++) {
+      links[j].classList.toggle('current', links[j].getAttribute('data-page') === id);
+    }
+    window.scrollTo(0, 0);
+  }
+
+  /* Loan calculator: simple flat interest on the starting amount.
+     To change the rates later, edit the numbers in the <select> list above
+     (they are the monthly percentage for each loan type). */
+  function money(n) { return 'KSh ' + Math.round(n).toLocaleString('en-KE'); }
+
+  function calculate() {
+    var amount = Number(document.getElementById('amount').value);
+    var months = Number(document.getElementById('months').value);
+    var rate = Number(document.getElementById('type').value);
+
+    var interest = amount * (rate / 100) * months;
+    var total = amount + interest;
+    var monthly = total / months;
+
+    document.getElementById('amountOut').textContent = money(amount);
+    document.getElementById('monthsOut').textContent = lang === 'sw'
+      ? (months === 1 ? 'mwezi 1' : 'miezi ' + months)
+      : months + (months === 1 ? ' month' : ' months');
+    document.getElementById('rateOut').textContent = rate + (lang === 'sw' ? '% kwa mwezi' : '% per month');
+    document.getElementById('interestOut').textContent = money(interest);
+    document.getElementById('totalOut').textContent = money(total);
+    document.getElementById('monthly').textContent = money(monthly);
+  }
+
+  document.getElementById('amount').addEventListener('input', calculate);
+  document.getElementById('months').addEventListener('input', calculate);
+  document.getElementById('type').addEventListener('change', calculate);
+  /* ---------- Language switch (English / Swahili) ----------
+     Every English line on the site is listed below with its Swahili version.
+     To fix or improve a translation, edit the Swahili text on the right. */
+  var lang = 'en';
+  var SW = {
+    'Home': 'Mwanzo',
+    'Savings': 'Akiba',
+    'Loans': 'Mikopo',
+    'Rider perks': 'Manufaa ya waendeshaji',
+    'Join': 'Jiunge',
+
+    'Built for riders': 'Kwa wapanda boda boda',
+    'Your ride. Your savings. Your future.': 'Pikipiki yako. Akiba yako. Kesho yako.',
+    'Save from just KSh 50 a day, borrow when the road gets tough, and grow together with riders like you.': 'Weka akiba kuanzia KSh 50 tu kwa siku, kopa barabara inapokuwa ngumu, na kua pamoja na wapanda boda wenzako.',
+    'Become a member': 'Kuwa mwanachama',
+    'Try the loan calculator \u2192': 'Jaribu kikokotoo cha mkopo \u2192',
+    'Start saving daily': 'Anza kuweka akiba kila siku',
+    '24 hrs': 'Saa 24',
+    'Loan processing': 'Uchakataji wa mkopo',
+    'Yearly': 'Kila mwaka',
+    'Dividends': 'Gawio',
+    'Your hero image goes here': 'Picha yako kuu iko hapa',
+    'Portrait photo works best': 'Picha wima inafaa zaidi',
+    'Savings growing': 'Akiba inakua',
+    'Every day counts': 'Kila siku ni muhimu',
+
+    'Save the way you ride': 'Weka akiba kama unavyoendesha',
+    "Simple savings built around a rider's day.": 'Akiba rahisi iliyojengwa kulingana na siku ya mpanda boda.',
+    'Daily boda savings': 'Akiba ya kila siku ya boda',
+    'Turn on autosave from as little as KSh 50 a day. Small amounts, every day, add up.': 'Washa akiba ya kiotomatiki kuanzia KSh 50 tu kwa siku. Kiasi kidogo, kila siku, hujumlika.',
+    'FROM KSH 50 A DAY': 'KUANZIA KSH 50 KWA SIKU',
+    'Locked savings': 'Akiba iliyofungwa',
+    'Non-withdrawable savings that earn you annual dividends at the end of the year.': 'Akiba isiyotolewa inayokupatia gawio la kila mwaka mwishoni mwa mwaka.',
+    'ANNUAL DIVIDENDS': 'GAWIO LA KILA MWAKA',
+    'Bike replacement fund': 'Mfuko wa kubadilisha pikipiki',
+    'Saving for a new motorbike or an engine overhaul? Set it aside here, bit by bit.': 'Unaweka akiba kwa ajili ya pikipiki mpya au kukarabati injini? Iweke kando hapa, kidogo kidogo.',
+    'YOUR NEXT BIKE': 'PIKIPIKI YAKO IJAYO',
+
+    'Loans made for riders': 'Mikopo iliyotengenezwa kwa wapanda boda',
+    'Real help for the real things that come up on the road.': 'Msaada wa kweli kwa mambo halisi yanayotokea barabarani.',
+    'Motorbike asset loan': 'Mkopo wa kununua pikipiki',
+    'Get your own bike and start earning for yourself.': 'Pata pikipiki yako mwenyewe na uanze kujipatia kipato.',
+    'Emergency loan': 'Mkopo wa dharura',
+    'Quick support when something urgent comes up.': 'Msaada wa haraka jambo la dharura linapotokea.',
+    'Spare parts and repairs': 'Vipuri na matengenezo',
+    'Keep your bike on the road and earning.': 'Endelea kuwa barabarani na kupata kipato.',
+    'See all loans': 'Tazama mikopo yote',
+    'Ready to start?': 'Uko tayari kuanza?',
+    'Join in under a minute. Start with KSh 50.': 'Jiunge chini ya dakika moja. Anza na KSh 50.',
+
+    'Three simple ways to put money aside, all built for riders.': 'Njia tatu rahisi za kuweka pesa kando, zote zimeundwa kwa wapanda boda.',
+    'Autosave from KSh 50 a day straight from your M-Pesa. Choose an amount that fits your day.': 'Akiba ya kiotomatiki kuanzia KSh 50 kwa siku moja kwa moja kutoka M-Pesa yako. Chagua kiasi kinachofaa siku yako.',
+    'AUTOSAVE': 'AKIBA YA KIOTOMATIKI',
+    'Non-withdrawable savings that grow untouched and earn annual dividends.': 'Akiba isiyotolewa inayokua bila kuguswa na kukupatia gawio la kila mwaka.',
+    'For a new motorbike or a big engine overhaul. Build it up a little every day.': 'Kwa pikipiki mpya au ukarabati mkubwa wa injini. Ijenge kidogo kila siku.',
+    'BIKE GOALS': 'MALENGO YA PIKIPIKI',
+
+    'Loans for riders': 'Mikopo kwa wapanda boda',
+    'Pick the loan that fits what you need, then see what it costs.': 'Chagua mkopo unaofaa mahitaji yako, kisha uone gharama yake.',
+    'Finance a bike of your own.': 'Pata mkopo wa pikipiki yako mwenyewe.',
+    'Fast help for urgent needs.': 'Msaada wa haraka kwa mahitaji ya dharura.',
+    'Fix it and get back on the road.': 'Itengeneze na urudi barabarani.',
+    'Gear and license': 'Vifaa vya usalama na leseni',
+    'Helmets, reflectors, and your license.': 'Kofia ngumu, viakisi mwanga, na leseni yako.',
+    'School fees loan': 'Mkopo wa ada ya shule',
+    'Keep your children in school.': 'Wafanye watoto wako waendelee shuleni.',
+    'Business booster': 'Kichocheo cha biashara',
+    'Grow a side business beyond the bike.': 'Kuza biashara ya ziada zaidi ya pikipiki.',
+
+    'Loan calculator': 'Kikokotoo cha mkopo',
+    'Slide to see your estimated monthly repayment.': 'Telezesha uone makadirio ya malipo yako ya kila mwezi.',
+    'Loan amount': 'Kiasi cha mkopo',
+    'Repayment period': 'Muda wa kulipa',
+    'Loan type': 'Aina ya mkopo',
+    '1 month': 'Mwezi 1',
+    '36 months': 'Miezi 36',
+    'Gear and license loan': 'Mkopo wa vifaa vya usalama na leseni',
+    'Business booster loan': 'Mkopo wa kichocheo cha biashara',
+    'Estimated monthly repayment': 'Makadirio ya malipo ya kila mwezi',
+    'per month': 'kwa mwezi',
+    'Interest rate': 'Kiwango cha riba',
+    'Total interest': 'Jumla ya riba',
+    'Total to repay': 'Jumla ya kulipa',
+    'Apply as a member': 'Omba kama mwanachama',
+    'Sample rates for the prototype only. Final rates will be set by the Sacco.': 'Viwango vya mfano kwa ajili ya mfano wa awali tu. Viwango vya mwisho vitapangwa na Sacco.',
+
+    'More rider advantages': 'Faida zaidi kwa wapanda boda',
+    'Membership is more than savings and loans.': 'Uanachama ni zaidi ya akiba na mikopo.',
+    'M-Pesa and USSD': 'M-Pesa na USSD',
+    'Save and repay with M-Pesa. USSD support means it works on any phone, no data needed.': 'Weka akiba na ulipe kwa M-Pesa. Huduma ya USSD inamaanisha inafanya kazi kwenye simu yoyote, bila data.',
+    'Rider training': 'Mafunzo ya wapanda boda',
+    'Road safety, first aid, customer service and more, taught to members.': 'Usalama barabarani, huduma ya kwanza, huduma kwa wateja na mengineyo, yanayofundishwa kwa wanachama.',
+    'License and compliance help': 'Msaada wa leseni na kufuata sheria',
+    'Get help with your license and the paperwork that keeps you legal on the road.': 'Pata msaada wa leseni yako na nyaraka zinazokuweka halali barabarani.',
+    'Annual dividends': 'Gawio la kila mwaka',
+    'When the Sacco does well, members share in the profit every year.': 'Sacco inapofanya vizuri, wanachama hugawana faida kila mwaka.',
+    'Insurance cover': 'Bima',
+    'Protection for you and your bike through trusted insurance partners.': 'Ulinzi kwako na pikipiki yako kupitia washirika wa bima wanaoaminika.',
+    'A community of riders': 'Jamii ya wapanda boda',
+    'Belong to a group that backs each other up, on and off the road.': 'Kuwa sehemu ya kundi linalosaidiana, barabarani na nje ya barabara.',
+    'Ride with us': 'Endesha nasi',
+    'Join the Sacco and start with KSh 50.': 'Jiunge na Sacco na uanze na KSh 50.',
+
+    'It takes less than a minute.': 'Inachukua chini ya dakika moja.',
+    'Full name': 'Jina kamili',
+    'Phone number': 'Namba ya simu',
+    'ID number': 'Namba ya kitambulisho',
+    'Stage or area': 'Stage au eneo',
+    'Daily saving': 'Akiba ya kila siku',
+    'Create a PIN': 'Tengeneza PIN',
+    'Join now': 'Jiunge sasa',
+    'Prototype only. No real account is created.': 'Mfano wa awali tu. Hakuna akaunti halisi inayofunguliwa.',
+    'Prototype only. No real account was created.': 'Mfano wa awali tu. Hakuna akaunti halisi iliyofunguliwa.',
+    'Boda Boda Sacco. Prototype with sample content.': 'Boda Boda Sacco. Mfano wa awali wenye maudhui ya mfano.',
+
+    'National ID': 'Kitambulisho cha taifa',
+    '4 digits': 'Tarakimu 4'
+  };
+
+  /* Numbers that the calculator updates by itself are skipped here */
+  var skipIds = { amountOut: 1, monthsOut: 1, rateOut: 1, interestOut: 1, totalOut: 1, monthly: 1 };
+  var originals = new WeakMap();
+
+  function tr(s) { return (lang === 'sw' && SW[s]) ? SW[s] : s; }
+
+  function translatePage() {
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var node;
+    while ((node = walker.nextNode())) {
+      var parent = node.parentNode;
+      if (!parent || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE' || skipIds[parent.id]) { continue; }
+      if (!originals.has(node)) { originals.set(node, node.nodeValue); }
+      var original = originals.get(node);
+      if (lang === 'en') { node.nodeValue = original; continue; }
+      var key = original.replace(/\s+/g, ' ').trim();
+      if (SW[key]) {
+        node.nodeValue = original.match(/^\s*/)[0] + SW[key] + original.match(/\s*$/)[0];
+      }
+    }
+    var fields = document.querySelectorAll('[placeholder]');
+    for (var i = 0; i < fields.length; i++) {
+      if (!fields[i].hasAttribute('data-en')) { fields[i].setAttribute('data-en', fields[i].getAttribute('placeholder')); }
+      fields[i].setAttribute('placeholder', tr(fields[i].getAttribute('data-en')));
+    }
+  }
+
+  function setLang(code) {
+    lang = code;
+    try { localStorage.setItem('bbs-lang', code); } catch (e) {}
+    document.documentElement.lang = code;
+    var en = document.getElementById('lang-en');
+    var sw = document.getElementById('lang-sw');
+    en.className = code === 'en' ? 'on' : '';
+    sw.className = code === 'sw' ? 'on' : '';
+    en.setAttribute('aria-pressed', code === 'en');
+    sw.setAttribute('aria-pressed', code === 'sw');
+    translatePage();
+    calculate();
+  }
+
+  calculate();
+  show('home');
+
+  /* Remember the last language the visitor chose */
+  try { if (localStorage.getItem('bbs-lang') === 'sw') { setLang('sw'); } } catch (e) {}
+</script>
+</body>
+</html>
