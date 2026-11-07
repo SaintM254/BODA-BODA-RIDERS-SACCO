@@ -354,7 +354,6 @@ window.I18N = (function () {
     'Incorrect PIN. Try again.': 'PIN si sahihi. Jaribu tena.',
     'Withdrawal to M-Pesa': 'Utoaji kwa M-Pesa',
     'Loan disbursed': 'Mkopo umetolewa',
-    'Boda Boda Sacco. Prototype with sample content.': 'Boda Boda Sacco. Mfano wenye maudhui ya mfano.',
     'Yearly': 'Kila mwaka',
     'Daily savings': 'Akiba ya kila siku',
     'Autosave from KSh 50 a day straight from your M-Pesa. Choose an amount that fits your day.': 'Akiba ya kiotomatiki kuanzia KSh 50 kwa siku moja kwa moja kutoka M-Pesa yako. Chagua kiasi kinachofaa siku yako.',
@@ -364,7 +363,6 @@ window.I18N = (function () {
     'Pick the loan that fits what you need, then see what it costs.': 'Chagua mkopo unaofaa mahitaji yako, kisha uone gharama yake.',
     'Join the Sacco and start with KSh 50.': 'Jiunge na Sacco na uanze na KSh 50.',
     'Save the way you ride. Borrow when the road gets tough.': 'Weka akiba kama unavyoendesha. Kopa barabara inapokuwa ngumu.',
-    'Prototype with sample content. Accounts, savings and loans are simulated in your browser — no real money moves and no data is sent anywhere.': 'Mfano wenye maudhui ya mfano. Akaunti, akiba na mikopo ni za majaribio kwenye kivinjari chako — hakuna pesa halisi inayohamishwa na hakuna data inayotumwa mahali popote.',
     'Projected dividends': 'Gawio linalotarajiwa',
 
   };

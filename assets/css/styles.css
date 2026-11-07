@@ -424,8 +424,6 @@ footer { border-top: 1px solid var(--line); margin-top: 20px; padding: 40px 0 32
 .footer-links a { color: var(--navy); text-decoration: none; }
 .footer-links a:hover { text-decoration: underline; }
 .footer-fine { margin-top: 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
-.demo-note { display: flex; gap: 8px; align-items: flex-start; max-width: 620px; font-size: 12px; line-height: 1.6; }
-.demo-note .icon { color: var(--muted); margin-top: 1px; }
 .footer-meta { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
 .noscript { background: var(--red-soft); color: #9d1c27; padding: 16px; text-align: center; font-size: 14px; }
 
