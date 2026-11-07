@@ -360,7 +360,7 @@
     '<section class="hero">' +
       '<div class="wrap hero-grid">' +
         '<div>' +
-          '<span class="eyebrow">' + icon('spark', 'tiny') + ' Built for riders</span>' +
+          '<span class="eyebrow">Built for riders</span>' +
           '<h1>Your ride. Your savings. Your future.</h1>' +
           '<p class="lead">Save from just KSh 50 a day, borrow when the road gets tough, and grow together with riders like you.</p>' +
           '<div class="hero-actions">' +
@@ -816,7 +816,7 @@
         '<label class="field-label">PIN<input type="password" name="pin" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 digits" required></label>' +
         '<button class="btn block" type="submit">Log in</button>' +
         '<div class="demo-box">' +
-          '<button type="button" class="btn outline block" data-action="demo-login">' + icon('spark') + ' ' + T('Open the demo account') + '</button>' +
+          '<button type="button" class="btn outline block" data-action="demo-login">' + T('Open the demo account') + '</button>' +
           '<p class="hint">' + T('A ready-made member with savings history and an active loan.') + '</p>' +
         '</div>' +
         '<div class="auth-switch">' + T('New here?') + ' <a href="#/join">' + T('Become a member') + '</a></div>' +
@@ -990,7 +990,7 @@
           '</div>' +
 
           '<div class="card">' +
-            '<div class="card-head"><h2>' + T('Quick actions') + '</h2>' + icon('spark') + '</div>' +
+            '<div class="card-head"><h2>' + T('Quick actions') + '</h2></div>' +
             '<div class="quick-grid">' +
               '<button type="button" class="btn sm outline" data-action="save" data-bucket="daily">' + icon('plus') + ' ' + T('Save daily') + '</button>' +
               '<button type="button" class="btn sm outline" data-action="save" data-bucket="locked">' + icon('lock') + ' ' + T('Lock savings') + '</button>' +
