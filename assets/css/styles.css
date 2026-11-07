@@ -55,8 +55,7 @@ button { font: inherit; }
 }
 .topbar-inner { max-width: 1100px; margin: auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--navy); letter-spacing: -0.2px; text-decoration: none; white-space: nowrap; }
-.brand-mark { width: 36px; height: 36px; border-radius: 12px; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.brand-mark .icon { width: 22px; height: 22px; }
+.brand-logo { display: block; height: 44px; width: auto; flex-shrink: 0; }
 .menu { display: flex; align-items: center; gap: 24px; }
 .menu > a:not(.pill) { color: var(--muted); font-size: 15px; text-decoration: none; transition: color .2s; }
 .menu > a:not(.pill):hover, .menu > a.current { color: var(--navy); }
@@ -78,6 +77,7 @@ button { font: inherit; }
 
 @media (max-width: 920px) {
   .nav-toggle { display: inline-flex; }
+  .brand-logo { height: 38px; }
   .menu {
     position: absolute; top: calc(100% + 8px); right: 16px; left: 16px;
     display: none; flex-direction: column; align-items: stretch; gap: 4px;
@@ -415,11 +415,10 @@ select:focus, input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px var
 /* ---------- Footer ---------- */
 footer { border-top: 1px solid var(--line); margin-top: 20px; padding: 40px 0 32px; color: var(--muted); font-size: 13px; background: var(--paper); }
 .footer-inner { display: flex; gap: 24px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
-.footer-brand { display: flex; gap: 12px; align-items: flex-start; }
-.footer-brand strong { color: var(--navy); font-size: 15px; }
-.footer-brand p { max-width: 300px; margin-top: 2px; }
-.footer-brand .brand-mark { width: 34px; height: 34px; border-radius: 11px; }
-.footer-brand .brand-mark .icon { width: 20px; height: 20px; }
+.footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.footer-brand .brand-logo { height: 56px; }
+.footer-brand p { max-width: 300px; }
+@media (max-width: 620px) { .footer-brand .brand-logo { height: 46px; } }
 .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
 .footer-links a { color: var(--navy); text-decoration: none; }
 .footer-links a:hover { text-decoration: underline; }

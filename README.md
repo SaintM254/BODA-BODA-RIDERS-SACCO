@@ -61,11 +61,17 @@ assets/css/styles.css      Design system and all layouts
 assets/js/i18n.js          English → Kiswahili dictionary and translator
 assets/js/store.js         Accounts, savings and loan rules (localStorage)
 assets/js/app.js           Router, views, dialogs and interactions
-assets/img/                Photography used across the site
-assets/favicon.svg         Site icon
+assets/img/                Photography, plus the brand logo (logo.svg, logo-touch.png)
+assets/favicon.svg         Fallback site icon, used if logo.svg cannot be read
 assets/og-image.jpg        1200×630 social preview image
 .nojekyll                  Serve files as-is on GitHub Pages
 ```
+
+The brand logo is `assets/img/logo.svg` — a 1627×886 (≈1.84:1) lockup whose
+`viewBox` is trimmed to the artwork, so it scales from a 38 px header mark to a
+56 px footer mark without empty margins. It also serves as the favicon, with
+`assets/favicon.svg` as the automatic fallback; `logo-touch.png` (180×180) is the
+`apple-touch-icon`.
 
 ### Routes
 

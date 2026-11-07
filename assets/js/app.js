@@ -1524,8 +1524,37 @@
   /* ---------------------------------------------------------
      Boot
      --------------------------------------------------------- */
+  /* Fall back to the shipped favicon if the brand logo cannot be read
+     (missing/renamed file, blocked request, offline copy without the image).
+     A probe is used instead of trusting img.complete, so a lazy-loading
+     footer logo that simply has not loaded yet is never swapped by mistake. */
+  function bindBrandFallback() {
+    const FALLBACK = 'assets/favicon.svg';
+    function swap(img) {
+      if (img.getAttribute('src') !== FALLBACK) img.setAttribute('src', FALLBACK);
+    }
+    function probe(src, onMissing) {
+      const img = new Image();
+      img.onerror = onMissing;
+      img.src = src;
+      return img;
+    }
+    $$('[data-brand-logo]').forEach(function (img) {
+      img.addEventListener('error', function () { swap(img); });
+      if (img.complete && img.naturalWidth === 0) {
+        probe(img.getAttribute('src'), function () { swap(img); });
+      }
+    });
+    const iconLink = $('[data-brand-icon]');
+    if (!iconLink) return;
+    probe(iconLink.getAttribute('href'), function () {
+      iconLink.setAttribute('href', FALLBACK);
+    });
+  }
+
   function boot() {
     window.I18N.init();
+    bindBrandFallback();
     const year = $('#year');
     if (year) year.textContent = String(new Date().getFullYear());
     if (!window.location.hash) {
